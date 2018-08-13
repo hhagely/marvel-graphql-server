@@ -1,8 +1,8 @@
-const url = `
+const Url = `
 type Url {
   type: String
   url: String
 }
 `;
 
-export default url;
+export default Url;

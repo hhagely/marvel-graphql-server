@@ -1,21 +1,14 @@
-import { ApolloServer, gql } from 'apollo-server';
+import { ApolloServer } from 'apollo-server';
+import { SchemaDefinition, RootQuery, resolvers } from './schema';
+import Character from './types/character';
 
-// The GraphQL schema
-const typeDefs = gql`
-	type Query {
-		"A simple type for getting started!"
-		hello: String
-	}
-`;
-
-// A map of functions which return data for the schema.
-const resolvers = {
-	Query: {
-		hello: () => 'world'
-	}
-};
-
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+	typeDefs: [SchemaDefinition, RootQuery, Character],
+	resolvers
+	// formatError: (error) => {
+	// 	console.log(`stack trace: ${error.extensions.exception.stacktrace}`);
+	// }
+});
 
 server.listen().then(({ url }) => {
 	console.log(`🚀 Server ready at ${url}`);

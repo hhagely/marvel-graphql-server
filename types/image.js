@@ -1,7 +1,7 @@
 const image = `
 type Image {
   path: String
-  extenstion: String
+  extension: String
 }
 `;
 

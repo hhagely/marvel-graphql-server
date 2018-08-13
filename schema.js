@@ -1,21 +1,45 @@
+import axios from 'axios';
+import { ts, hash, apikey } from './config';
+
 import Character from './types/character';
-import { makeExecutableSchema } from './node_modules/graphql-tools';
+import { AuthenticationError } from 'apollo-server';
 
-const RootQuery = `
-  type RootQuery {
-    character(id: Int): Character
-  }
+export const RootQuery = `
+	type Query {
+		getCharacters: [Character]
+		authenticationError: String
+	}
 `;
 
-const SchemaDefinition = `
-  schema {
-    query: RootQuery
-  }
+export const SchemaDefinition = `
+	schema {
+		query: Query
+	}
 `;
 
-const resolvers = {};
-
-export default makeExecutableSchema({
-	typeDefs: [SchemaDefinition, RootQuery, Character],
-	resolvers: {}
-});
+export const resolvers = {
+	Query: {
+		getCharacters: (parent, args, context, info) => {
+			return axios
+				.get('http://gateway.marvel.com/v1/public/characters', {
+					params: {
+						ts,
+						apikey,
+						hash
+						// limit: 50
+						// nameStartsWith
+					}
+				})
+				.then((response) => {
+					console.log(response.data.data.results);
+					return response.data.data.results;
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
+		authenticationError: (parent, args, context) => {
+			throw new AuthenticationError();
+		}
+	}
+};

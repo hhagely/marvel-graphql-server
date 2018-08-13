@@ -3,7 +3,7 @@ import StorySummary from './storySummary';
 const StoryList = `
 type StoryList {
   available: Int
-  returned: int
+  returned: Int
   collectionUri: String
   items: [StorySummary]
 }
