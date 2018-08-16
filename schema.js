@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { ts, hash, apikey } from './config';
 
-import Character from './types/character';
 import { AuthenticationError } from 'apollo-server';
 
 export const RootQuery = `
 	type Query {
-		getCharacters: [Character]
+		getCharacters(nameStartsWith: String, limit: Int, offset: Int): CharacterDataWrapper
+		getComics(titleStartsWith: String, limit: Int, offset: Int): ComicDataWrapper,
+		getEvents(nameStartsWith: String, limit: Int, offset: Int): EventDataWrapper,
 		authenticationError: String
 	}
 `;
@@ -19,20 +20,66 @@ export const SchemaDefinition = `
 
 export const resolvers = {
 	Query: {
-		getCharacters: (parent, args, context, info) => {
+		getCharacters: (
+			parent,
+			{ nameStartsWith, limit, offset },
+			context,
+			info
+		) => {
 			return axios
 				.get('http://gateway.marvel.com/v1/public/characters', {
 					params: {
 						ts,
 						apikey,
-						hash
-						// limit: 50
-						// nameStartsWith
+						hash,
+						limit,
+						nameStartsWith,
+						offset
 					}
 				})
 				.then((response) => {
-					console.log(response.data.data.results);
-					return response.data.data.results;
+					console.log(response.data);
+					return response.data;
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
+		getComics: (parent, { titleStartsWith, limit, offset }, context, info) => {
+			return axios
+				.get('http://gateway.marvel.com/v1/public/comics', {
+					params: {
+						ts,
+						apikey,
+						hash,
+						limit,
+						titleStartsWith,
+						offset
+					}
+				})
+				.then((response) => {
+					console.log(response.data);
+					return response.data;
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
+		getEvents: (parent, { nameStartsWith, limit, offset }, context, info) => {
+			return axios
+				.get('http://gateway.marvel.com/v1/public/events', {
+					params: {
+						ts,
+						apikey,
+						hash,
+						limit,
+						nameStartsWith,
+						offset
+					}
+				})
+				.then((response) => {
+					console.log(response.data);
+					return response.data;
 				})
 				.catch((err) => {
 					console.log(err);
